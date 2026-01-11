@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Flow - Smart Scanning</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19e66b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header: Skip Button -->
+<div class="flex w-full items-center justify-end px-4 py-6 z-10">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-transparent text-neutral-500 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Skip</span>
+</button>
+</div>
+<!-- Main Content Area -->
+<div class="flex flex-1 flex-col items-center justify-center px-6 -mt-10">
+<!-- Hero Visual -->
+<div class="@container w-full max-w-[340px] mb-8">
+<div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 bg-neutral-100 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10 group">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-700 group-hover:scale-105" data-alt="Close up of a hand holding a smartphone scanning a paper receipt" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCDOcC2uWNZDqCVIn_YCPwR82avj5npatTtPMexhliDOGxM_6wansdvpSjX_yrWN6HAhjI1kOC03PoQU-LITrae6Cd-5nz3GBeK3BSJtxczsNTgoqcsibGvouutWvEOI8BOS-wlz8E18TWAc_LGMR4_QN590_jue9DeD-94DiUyjhFZBZZRZHBv7sweU5M6GIbF2zz1elwhDCl_68JMbrdoZBOErHxz6uq-MBErHRFNWuLT2zGnu1tYq3OQMX2U_34NLBN8_bIl9l4");'>
+</div>
+<!-- Dark Overlay for contrast -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background-light dark:to-background-dark opacity-90"></div>
+<div class="absolute inset-0 bg-black/20 dark:bg-black/40"></div>
+<!-- Scanning UI Overlay -->
+<div class="absolute inset-0 flex items-center justify-center p-8">
+<div class="relative w-full h-3/4 border-2 border-primary/60 rounded-xl flex flex-col justify-between p-2 overflow-hidden bg-white/5 backdrop-blur-[2px]">
+<!-- Corner Accents -->
+<div class="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-primary"></div>
+<div class="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-primary"></div>
+<div class="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-primary"></div>
+<div class="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-primary"></div>
+<!-- Scanning Beam Animation -->
+<div class="absolute top-0 left-0 w-full h-1 bg-primary/80 shadow-[0_0_20px_rgba(25,230,107,0.8)] animate-[spin_3s_linear_infinite]" style="animation: scan 2.5s ease-in-out infinite;"></div>
+<!-- Floating icon representing receipt detection -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary/20 p-3 rounded-full backdrop-blur-md">
+<span class="material-symbols-outlined text-primary text-3xl">
+                                    receipt_long
+                                </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Text Content -->
+<div class="flex flex-col items-center text-center max-w-sm mx-auto">
+<h1 class="text-neutral-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight pb-3">
+                    Paperless tracking
+                </h1>
+<p class="text-neutral-600 dark:text-gray-300 text-base font-normal leading-relaxed">
+                    Snap a photo of any receipt. Flow automatically matches it to your bank transactions and categorizes your spending.
+                </p>
+</div>
+</div>
+<!-- Footer Area -->
+<div class="w-full px-6 pb-10 pt-4">
+<!-- Page Indicators (Step 2 of 3) -->
+<div class="flex w-full flex-row items-center justify-center gap-3 py-6">
+<!-- Step 1: Inactive -->
+<div class="h-2.5 w-2.5 rounded-full bg-neutral-300 dark:bg-white/20"></div>
+<!-- Step 2: Active -->
+<div class="h-2.5 w-8 rounded-full bg-primary shadow-[0_0_10px_rgba(25,230,107,0.4)]"></div>
+<!-- Step 3: Inactive -->
+<div class="h-2.5 w-2.5 rounded-full bg-neutral-300 dark:bg-white/20"></div>
+</div>
+<!-- Primary Action Button -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-6 bg-primary hover:bg-[#15cc5f] transition-all active:scale-[0.98] text-background-dark shadow-lg shadow-primary/20">
+<span class="text-base font-bold leading-normal tracking-wide mr-2">Next</span>
+<span class="material-symbols-outlined text-xl font-bold">
+                    arrow_forward
+                </span>
+</button>
+</div>
+</div>
+<style>
+        @keyframes scan {
+            0% { top: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 90%; opacity: 0; }
+        }
+    </style>
+</body></html>

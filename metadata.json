@@ -1,0 +1,7 @@
+{
+  "name": "Flow Finance",
+  "description": "A production-grade personal finance application featuring centralized transaction tracking, intelligent receipt matching, and deep financial analytics.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

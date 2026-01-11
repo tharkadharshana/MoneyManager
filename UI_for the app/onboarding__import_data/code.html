@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Flow - Onboarding: Import Data</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#19e66b",
+              "background-light": "#f6f8f7",
+              "background-dark": "#112117",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden">
+<!-- Top Bar -->
+<!-- Adjusted padding-top to account for mobile status bar area -->
+<div class="flex items-center justify-between px-6 pt-14 pb-4 w-full z-10">
+<!-- Empty div for spacing/centering if needed later, or logo -->
+<div class="w-12"></div>
+<button class="group flex items-center justify-center rounded-full py-2 px-3 hover:bg-gray-200 dark:hover:bg-white/5 transition-colors">
+<p class="text-sm font-bold text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Skip</p>
+</button>
+</div>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col items-center justify-center w-full max-w-lg mx-auto px-6">
+<!-- Illustration Area -->
+<div class="@container w-full mb-8 flex justify-center relative">
+<!-- Background Glow Effect -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary/20 rounded-full blur-[60px] pointer-events-none"></div>
+<div class="w-full aspect-[4/3] max-h-80 bg-center bg-no-repeat bg-contain relative z-0 transform hover:scale-105 transition-transform duration-700 ease-out" data-alt="Minimalist 3D illustration of a smartphone connecting to a cloud database with glowing green accents" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBMWAYSj26lVpAtG75zO8y8clg9mwDxSGxB8yMD3Iq2Rug9nXcnqVPqPxhGizI_7EQ3bXy_DgH0mGDha4DT1SrXZJZJub7qZOuEy-X6eSVWNfuwvPAuxqro0rGc7urLWoteNZ0OUwprxBuUoD_LYhLg-5eRD8NWEQWZTuYMxpcFNdUaoJHInyTC5qAVMy0u4KznDoXGqCYCw84Nocd4YsGUw3Cg04IQd1lce4N8A7OBugjqyyocuEttZiL0GuSq_kJrC4074KW9XuI"); mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);'>
+</div>
+</div>
+<!-- Text Content -->
+<div class="flex flex-col items-center text-center space-y-4 mb-8">
+<h1 class="text-3xl md:text-4xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">
+                    Connect your world
+                </h1>
+<p class="text-gray-600 dark:text-gray-400 text-base md:text-lg font-normal leading-relaxed max-w-xs mx-auto">
+                    Securely link your bank accounts and credit cards to see all your finances in one place.
+                </p>
+</div>
+</div>
+<!-- Footer / Bottom Action -->
+<div class="w-full max-w-lg mx-auto px-6 pb-10 pt-4 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent">
+<!-- Page Indicators -->
+<div class="flex w-full flex-row items-center justify-center gap-3 mb-8">
+<!-- Active Indicator -->
+<div class="h-2 w-8 rounded-full bg-primary shadow-[0_0_10px_rgba(25,230,107,0.4)] transition-all"></div>
+<!-- Inactive Indicators -->
+<div class="h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+<div class="h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+</div>
+<!-- Primary Action Button -->
+<button class="relative w-full overflow-hidden bg-primary hover:bg-[#15cf60] text-background-dark font-bold text-lg py-4 px-6 rounded-xl shadow-lg shadow-primary/10 transition-all active:scale-[0.98] group">
+<div class="flex items-center justify-center gap-2 relative z-10">
+<span>Next</span>
+<span class="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">arrow_forward</span>
+</div>
+</button>
+</div>
+</div>
+</body></html>

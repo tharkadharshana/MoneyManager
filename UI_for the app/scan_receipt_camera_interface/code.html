@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Flow - Scan Receipt</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19e66b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom utilities for the camera overlay effect */
+        .camera-scrim {
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        }
+        .text-shadow-sm {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen w-full relative select-none">
+<!-- 1. Background Layer: Camera Feed Simulation -->
+<div class="absolute inset-0 z-0 bg-gray-900">
+<img alt="Camera viewfinder showing a white paper receipt on a dark wooden table" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfsQ91bIds-IJIwijE_hQ58aDZfAlGl69KLrkzjDcm8UPOfxyfLp1EyxrmY86-8JmJ7e3QsEZ83s4POrY0qCQtkKlyigDyDQbfWfg--ExLG_K7EzhsVhkTbJ59jNvEyZSI7Jw2bJ_XfUD7fW-JIiJaL8ZmGOpv7s5IVTIcdjVO5jLeuw-Bz_iyAif_OsxtfpNbfylEQ6MYK9Lsl3OeP1w80Em0Y8kSsQ0oqEbJ7jDB39ozIEHUynkKpI4_cVMknOkXGaXtWI75UPw"/>
+<!-- Subtle gradient overlay to ensure UI visibility at top/bottom -->
+<div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+</div>
+<!-- 2. UI Layer: Top Controls -->
+<header class="absolute top-0 left-0 right-0 z-50 pt-12 pb-4 px-6 flex items-center justify-between">
+<!-- Close Button -->
+<button class="flex items-center justify-center size-10 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition active:scale-95">
+<span class="material-symbols-outlined" style="font-size: 24px;">close</span>
+</button>
+<!-- Flash Toggle -->
+<button class="flex items-center justify-center size-10 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition active:scale-95">
+<span class="material-symbols-outlined" style="font-size: 24px;">flash_off</span>
+</button>
+</header>
+<!-- 3. UI Layer: Center Scanning Frame & Guidance -->
+<main class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+<!-- Status Chips (Floating above frame) -->
+<div class="mb-6 flex flex-col gap-2 items-center animate-pulse">
+<div class="flex h-8 items-center justify-center gap-x-2 rounded-full bg-primary/20 backdrop-blur-md px-4 border border-primary/30">
+<span class="material-symbols-outlined text-primary text-[18px]">center_focus_weak</span>
+<p class="text-primary text-xs font-semibold leading-normal tracking-wide uppercase">Detecting...</p>
+</div>
+</div>
+<!-- The Cutout Frame -->
+<!-- The shadow creates the dark overlay around the clear box -->
+<div class="relative w-[80%] aspect-[3/4] max-w-sm rounded-2xl border border-white/20 camera-scrim">
+<!-- Corner Accents (indicating active scanning) -->
+<!-- Top Left -->
+<div class="absolute -top-[2px] -left-[2px] w-8 h-8 rounded-tl-2xl border-t-4 border-l-4 border-primary"></div>
+<!-- Top Right -->
+<div class="absolute -top-[2px] -right-[2px] w-8 h-8 rounded-tr-2xl border-t-4 border-r-4 border-primary"></div>
+<!-- Bottom Left -->
+<div class="absolute -bottom-[2px] -left-[2px] w-8 h-8 rounded-bl-2xl border-b-4 border-l-4 border-primary"></div>
+<!-- Bottom Right -->
+<div class="absolute -bottom-[2px] -right-[2px] w-8 h-8 rounded-br-2xl border-b-4 border-r-4 border-primary"></div>
+<!-- Scanning Line (Decorative Animation) -->
+<div class="absolute top-1/2 left-2 right-2 h-[1px] bg-primary/40 shadow-[0_0_15px_rgba(25,230,107,0.6)]"></div>
+</div>
+<!-- Guidance Text -->
+<div class="mt-8 px-6 py-2 rounded-lg bg-black/30 backdrop-blur-sm">
+<p class="text-white text-base font-medium text-center text-shadow-sm">Place receipt within frame</p>
+</div>
+</main>
+<!-- 4. UI Layer: Bottom Controls -->
+<footer class="absolute bottom-0 left-0 right-0 z-50 pt-12 pb-10 px-8 bg-gradient-to-t from-black via-black/80 to-transparent">
+<div class="flex items-center justify-between max-w-md mx-auto relative">
+<!-- Left: Gallery -->
+<div class="flex-1 flex justify-start">
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white transition active:scale-95">
+<span class="material-symbols-outlined" style="font-size: 24px;">photo_library</span>
+</button>
+</div>
+<!-- Center: Shutter Button -->
+<div class="flex-shrink-0 mx-4">
+<button class="relative flex items-center justify-center rounded-full size-20 border-[5px] border-white/30 bg-transparent active:border-primary/50 transition-all duration-200 active:scale-95 group">
+<div class="size-16 rounded-full bg-white group-active:bg-primary transition-colors duration-200 shadow-lg"></div>
+</button>
+</div>
+<!-- Right: Manual Entry -->
+<div class="flex-1 flex justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-3 bg-transparent text-white text-sm font-bold leading-normal tracking-wide hover:text-primary transition-colors active:opacity-70">
+<span class="truncate">Manual</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>

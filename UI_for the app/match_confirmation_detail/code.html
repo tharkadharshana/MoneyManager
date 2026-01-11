@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Match Confirmation Detail</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19e66b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                        "surface-dark": "#1a2e22",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light dark:bg-background-dark p-4 justify-between border-b border-gray-200 dark:border-white/5">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-white" style="font-size: 24px;">arrow_back_ios_new</span>
+</button>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Match Detail</h2>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col w-full max-w-md mx-auto p-4 pb-24">
+<!-- Header Text -->
+<div class="flex flex-col items-center pt-2 pb-6 space-y-2">
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-sm filled" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-primary text-xs font-bold uppercase tracking-wide">AI Confidence: 98%</span>
+</div>
+<h1 class="text-2xl md:text-3xl font-bold text-center tracking-tight">Smart Match Found</h1>
+<p class="text-slate-500 dark:text-gray-400 text-sm text-center max-w-[280px]">Based on exact amount match and transaction date proximity.</p>
+</div>
+<!-- Comparison Visual -->
+<div class="relative w-full mb-8">
+<!-- The Split Card -->
+<div class="flex w-full rounded-2xl overflow-hidden shadow-lg h-48 ring-1 ring-black/5 dark:ring-white/10">
+<!-- Left: Bank Transaction -->
+<div class="w-1/2 bg-white dark:bg-surface-dark p-5 flex flex-col justify-center relative">
+<div class="absolute top-3 left-3 flex items-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-xs">account_balance</span>
+<span class="text-[10px] font-medium uppercase tracking-wider">Bank</span>
+</div>
+<div class="flex flex-col gap-3 mt-2">
+<div class="size-10 rounded-full bg-[#006241] flex items-center justify-center text-white shrink-0 shadow-sm">
+<!-- Simple Starbucks-like placeholder icon -->
+<span class="material-symbols-outlined" style="font-size: 20px;">coffee</span>
+</div>
+<div>
+<p class="text-sm font-semibold truncate">Starbucks</p>
+<p class="text-xs text-slate-500 dark:text-gray-400">Oct 24 • 9:41 AM</p>
+</div>
+<p class="text-lg font-bold text-slate-900 dark:text-white">-$5.40</p>
+</div>
+</div>
+<!-- Right: Receipt Image -->
+<div class="w-1/2 bg-gray-100 dark:bg-gray-800 relative group cursor-pointer overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Close up of a paper receipt held in hand showing coffee purchase details" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4yfGV950xwPxMLxFTdPcYF2z5Bg9g6mWWfV9yCu_vKpIvQZ4XaUi6m5-Th6IsL9-84KaqnspC4kPf_XZzC9TDXUK3BIIXie29QPHBkBfiG1zIIxnMCEURAh5s0kqH6NPi5mR3u9HT2xWwaUGqHrgoGnGWy_5WWZyVBIj7GRMuY7q6QlLl6O5dtmOSa1P8cM2jNVGt_Crzh_tYBoTqkGJxSdJn2nyiAhDJ7bUlBVEVgEeYvlby_aFCiiOSrZhxY_QdLMo24jIiIR4');">
+</div>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute top-3 right-3 flex items-center gap-1 text-white drop-shadow-md">
+<span class="text-[10px] font-bold uppercase tracking-wider">Receipt</span>
+<span class="material-symbols-outlined text-xs">receipt_long</span>
+</div>
+<!-- Highlighted Amount overlay on image to show AI detection -->
+<div class="absolute bottom-4 left-4 bg-primary/90 backdrop-blur-sm text-black px-2 py-1 rounded text-xs font-bold shadow-lg transform translate-y-0 group-hover:-translate-y-1 transition-transform">
+                        $5.40
+                    </div>
+</div>
+</div>
+<!-- Connector Icon -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-10 bg-surface-light dark:bg-surface-dark rounded-full border-4 border-background-light dark:border-background-dark flex items-center justify-center shadow-sm z-10">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">link</span>
+</div>
+</div>
+<!-- Data Breakdown List -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-1 shadow-sm border border-gray-100 dark:border-white/5">
+<h3 class="px-4 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-gray-400">Matched Details</h3>
+<div class="grid grid-cols-1 divide-y divide-gray-100 dark:divide-white/5">
+<!-- Row 1: Amount -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-xl">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Amount</span>
+<span class="text-xs text-slate-500 dark:text-gray-400">Exact match</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 dark:text-white">$5.40</span>
+<span class="material-symbols-outlined text-primary text-lg filled" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Row 2: Date -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-xl">calendar_today</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Date</span>
+<span class="text-xs text-slate-500 dark:text-gray-400">Same day</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Oct 24</span>
+<span class="material-symbols-outlined text-primary text-lg filled" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Row 3: Merchant -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-xl">storefront</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Merchant</span>
+<span class="text-xs text-slate-500 dark:text-gray-400">Text similarity</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-right">
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Starbucks</span>
+<span class="text-[10px] text-slate-400">vs Starbucks Coffee</span>
+</div>
+<span class="material-symbols-outlined text-primary text-lg filled" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Fixed Bottom Actions -->
+<div class="fixed bottom-0 left-0 w-full bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-t border-gray-200 dark:border-white/5 p-4 z-40">
+<div class="max-w-md mx-auto grid grid-cols-1 gap-3">
+<button class="w-full bg-primary hover:bg-green-400 active:bg-green-500 text-black font-bold h-12 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">check</span>
+                Confirm Match
+            </button>
+<button class="w-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-slate-500 dark:text-gray-400 font-medium h-12 rounded-xl flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-xl">close</span>
+                Not a match
+            </button>
+</div>
+</div>
+</body></html>

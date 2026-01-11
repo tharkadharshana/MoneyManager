@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Flow - Accounts &amp; Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19e66b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                        "surface-dark": "#1a3224", // Custom surface color derived from components
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased selection:bg-primary selection:text-black">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<!-- Header / Profile Section -->
+<header class="flex items-center justify-between px-6 pt-12 pb-6 bg-transparent">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-14 border-2 border-primary/20" data-alt="Profile picture of a smiling user" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC66qCknm6NmRpwJFOmwDEmDC19SzdiAZN3DMJSCf2Ht02uYdEExO1IwB2kZ9_0PBouUwJcrviDybk3tnMsEnGjMIbsjU6f1NULus0GYB2QTv7-ynGzbWADuUFerB7wy7fwKQJDhpVgsjUc66ayMLoMG_AXdCRWbJXxl23Tzc8vDJYlxNYzQ49ZM4hFcpHQGbpAUpB5KBqdU_K9dRo9NoeZVrw43Dam7LWtkNCAWP_6VZzLf_M0QuePEHBSacilKgPPqrqC_CnR-90");'>
+</div>
+<div class="absolute bottom-0 right-0 size-4 bg-primary rounded-full border-2 border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<h1 class="text-xl font-bold leading-tight">Alex Doe</h1>
+<p class="text-gray-400 text-sm font-medium">@alexdoe_flow</p>
+</div>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full bg-surface-dark hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-primary" style="font-size: 24px;">settings</span>
+</button>
+</header>
+<!-- Linked Accounts Section -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-6">
+<h2 class="text-lg font-bold tracking-tight">Linked Accounts</h2>
+<button class="text-sm font-semibold text-primary hover:text-primary/80">Manage</button>
+</div>
+<!-- Horizontal Carousel -->
+<div class="flex gap-4 overflow-x-auto px-6 pb-4 no-scrollbar snap-x snap-mandatory">
+<!-- Card 1: Chase -->
+<div class="snap-center shrink-0 w-72 h-44 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-[#1e4a36] to-[#0f1f16] z-0"></div>
+<div class="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 z-0"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">account_balance</span>
+<span class="font-semibold text-white/90">Chase Checking</span>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">check_circle</span>
+</div>
+<div class="relative z-10">
+<p class="text-3xl font-bold tracking-tight text-white">$2,450.00</p>
+<p class="text-xs text-primary/80 mt-1 flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Synced just now
+                        </p>
+</div>
+<div class="relative z-10 flex justify-between items-center text-xs text-white/50 font-mono">
+<span>**** 4921</span>
+<span>VISA</span>
+</div>
+</div>
+<!-- Card 2: Amex -->
+<div class="snap-center shrink-0 w-72 h-44 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-[#3b3b3b] to-[#121212] z-0"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-yellow-500" style="font-size: 24px;">credit_card</span>
+<span class="font-semibold text-white/90">Amex Gold</span>
+</div>
+<span class="material-symbols-outlined text-gray-500" style="font-size: 20px;">sync</span>
+</div>
+<div class="relative z-10">
+<p class="text-3xl font-bold tracking-tight text-white">-$450.20</p>
+<p class="text-xs text-gray-400 mt-1">Synced 2m ago</p>
+</div>
+<div class="relative z-10 flex justify-between items-center text-xs text-white/50 font-mono">
+<span>**** 8821</span>
+<span>AMEX</span>
+</div>
+</div>
+<!-- Card 3: Add New -->
+<div class="snap-center shrink-0 w-24 h-44 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-colors cursor-pointer text-white/50 hover:text-primary hover:border-primary/50">
+<span class="material-symbols-outlined" style="font-size: 32px;">add</span>
+<span class="text-xs font-semibold">Add</span>
+</div>
+</div>
+</section>
+<!-- Pending Actions Section -->
+<section class="px-6 mt-4">
+<h2 class="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider text-xs">Action Required</h2>
+<div class="w-full rounded-xl bg-primary/10 border border-primary/20 p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">receipt_long</span>
+</div>
+<div>
+<p class="font-bold text-white text-sm">Review Receipts</p>
+<p class="text-xs text-primary font-medium">3 Unreconciled transactions</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">chevron_right</span>
+</div>
+</section>
+<!-- Settings List -->
+<section class="px-6 mt-8">
+<h2 class="text-lg font-bold tracking-tight mb-4">Preferences</h2>
+<div class="flex flex-col rounded-2xl bg-surface-dark overflow-hidden">
+<!-- Item: Categories -->
+<button class="flex items-center justify-between p-4 w-full hover:bg-white/5 transition-colors border-b border-white/5 text-left group">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded-lg bg-[#2a4535] flex items-center justify-center text-white group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">category</span>
+</div>
+<span class="font-medium text-white text-sm">Manage Categories</span>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-hover:text-white transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+<!-- Item: Export -->
+<button class="flex items-center justify-between p-4 w-full hover:bg-white/5 transition-colors border-b border-white/5 text-left group">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded-lg bg-[#2a4535] flex items-center justify-center text-white group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+</div>
+<span class="font-medium text-white text-sm">Data Export</span>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-hover:text-white transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+<!-- Item: Security -->
+<button class="flex items-center justify-between p-4 w-full hover:bg-white/5 transition-colors border-b border-white/5 text-left group">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded-lg bg-[#2a4535] flex items-center justify-center text-white group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">face</span>
+</div>
+<span class="font-medium text-white text-sm">Security &amp; FaceID</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-primary font-medium">Enabled</span>
+<span class="material-symbols-outlined text-gray-500 group-hover:text-white transition-colors" style="font-size: 20px;">chevron_right</span>
+</div>
+</button>
+<!-- Item: Help -->
+<button class="flex items-center justify-between p-4 w-full hover:bg-white/5 transition-colors text-left group">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded-lg bg-[#2a4535] flex items-center justify-center text-white group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">help</span>
+</div>
+<span class="font-medium text-white text-sm">Help &amp; Support</span>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-hover:text-white transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Sign Out Button -->
+<div class="px-6 mt-6 mb-8">
+<button class="w-full py-3 rounded-xl bg-red-500/10 text-red-400 font-semibold text-sm hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+                Sign Out
+            </button>
+<p class="text-center text-xs text-gray-600 dark:text-gray-500 mt-4">Version 2.4.0 (Build 1024)</p>
+</div>
+<!-- Simulated Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-background-dark/95 backdrop-blur-md border-t border-white/5 pb-6 pt-2 px-6 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-primary">
+<span class="material-symbols-outlined fill-current" style="font-size: 24px;">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Accounts</span>
+</button>
+<div class="relative -top-5">
+<button class="size-14 bg-primary text-black rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(25,230,107,0.4)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 28px;">add</span>
+</button>
+</div>
+<button class="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">bar_chart</span>
+<span class="text-[10px] font-medium">Analytics</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</nav>
+</div>
+</body></html>

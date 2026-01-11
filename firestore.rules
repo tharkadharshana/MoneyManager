@@ -2,21 +2,20 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Explicitly allow guest_user full access (Fallback mode)
-    // This allows the app to function even if Anonymous Auth is disabled in the console
-    match /moneyApp/guest_user {
-      allow read, write: if true;
+    // Allow access to the 'users' collection
+    match /users/{userId} {
+      // DEVELOPMENT MODE: Allow read/write if authenticated OR if utilizing the dev fallback
+      // In production, you should revert this to: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if true; 
+
       match /{document=**} {
         allow read, write: if true;
       }
     }
 
-    // Standard authenticated user access
+    // Deprecated collection, keeping for safety
     match /moneyApp/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      match /{document=**} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
     }
   }
 }

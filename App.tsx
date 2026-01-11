@@ -5,12 +5,28 @@ import { Analytics } from './components/Analytics';
 import { Scanner } from './components/Scanner';
 import { TransactionList } from './components/TransactionList';
 import { AccountsView } from './components/AccountsView';
-import { DataProvider } from './context/DataContext';
+import { LoginView } from './components/LoginView';
+import { DataProvider, useData } from './context/DataContext';
 import { Search } from 'lucide-react';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const { user, loading } = useData();
+
+  // Show loading spinner while auth initializes
+  if (loading && !user) {
+      return (
+          <div className="min-h-screen bg-background flex items-center justify-center">
+              <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+          </div>
+      );
+  }
+
+  // Show login if not authenticated
+  if (!user) {
+      return <LoginView />;
+  }
 
   const renderContent = () => {
     switch (activeTab) {

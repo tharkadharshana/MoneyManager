@@ -14,7 +14,8 @@
     "lucide-react": "^0.562.0",
     "recharts": "^3.6.0",
     "decimal.js": "10.4.3",
-    "firebase": "^12.7.0"
+    "firebase": "^12.7.0",
+    "pdfjs-dist": "3.11.174"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

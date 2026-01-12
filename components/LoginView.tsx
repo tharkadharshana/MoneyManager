@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { useData } from '../context/DataContext';
+import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/Button';
-import { Wallet, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Input } from './ui/Input';
+import { Card } from './ui/Card';
+import { Wallet, Mail, Lock, AlertCircle, ShieldCheck, Zap } from 'lucide-react';
 
 export const LoginView: React.FC = () => {
-  const { loginWithGoogle, loginWithEmail, signupWithEmail, loginAsGuest, loading } = useData();
+  const { loginWithGoogle, loginWithEmail, signupWithEmail, loginAsGuest, loading } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,50 +15,23 @@ export const LoginView: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setError('');
-      if (!email || !password) {
-          setError('Please fill in all fields');
-          return;
-      }
-
       try {
-          if (mode === 'login') {
-              await loginWithEmail(email, password);
-          } else {
-              await signupWithEmail(email, password);
-          }
+          if (mode === 'login') await loginWithEmail(email, password);
+          else await signupWithEmail(email, password);
       } catch (err: any) {
-          console.error(err);
-          // Simplified error handling for demo
-          if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-              setError('Invalid email or password');
-          } else if (err.code === 'auth/email-already-in-use') {
-              setError('Email already in use');
-          } else if (err.code === 'auth/weak-password') {
-              setError('Password should be at least 6 characters');
-          } else {
-            setError(err.message || 'Authentication failed');
-          }
+          setError(err.message || 'Authentication failed');
       }
-  };
-
-  const toggleMode = () => {
-      setMode(mode === 'login' ? 'signup' : 'login');
-      setError('');
   };
 
   return (
     <div className="min-h-screen bg-background text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      
-      {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
         <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-blue-500/10 rounded-full blur-[100px]" />
       </div>
 
       <div className="w-full max-w-sm z-10 flex flex-col items-center">
-        
-        {/* Logo/Brand */}
-        <div className="flex flex-col items-center gap-4 mb-8">
+        <div className="flex flex-col items-center gap-4 mb-6">
           <div className="w-16 h-16 bg-gradient-to-tr from-primary to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <Wallet size={32} className="text-white" />
           </div>
@@ -66,7 +41,17 @@ export const LoginView: React.FC = () => {
           </div>
         </div>
 
-        {/* Email/Password Form */}
+        <div className="grid grid-cols-2 gap-3 w-full mb-6">
+            <Card className="bg-zinc-900/50 border-zinc-800 p-3 flex flex-col items-center gap-2">
+                <ShieldCheck size={20} className="text-primary" />
+                <span className="text-[10px] font-medium text-zinc-300 uppercase tracking-wide">Secure Data</span>
+            </Card>
+            <Card className="bg-zinc-900/50 border-zinc-800 p-3 flex flex-col items-center gap-2">
+                <Zap size={20} className="text-amber-400" />
+                <span className="text-[10px] font-medium text-zinc-300 uppercase tracking-wide">Instant Sync</span>
+            </Card>
+        </div>
+
         <div className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 mb-6">
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
@@ -76,33 +61,8 @@ export const LoginView: React.FC = () => {
                     </div>
                 )}
                 
-                <div className="space-y-1">
-                    <label className="text-xs font-medium text-zinc-400 ml-1">Email</label>
-                    <div className="relative">
-                        <Mail size={16} className="absolute left-3 top-3.5 text-zinc-500" />
-                        <input 
-                            type="email" 
-                            className="w-full bg-black/40 border border-zinc-700 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-zinc-600"
-                            placeholder="you@example.com"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-1">
-                    <label className="text-xs font-medium text-zinc-400 ml-1">Password</label>
-                    <div className="relative">
-                        <Lock size={16} className="absolute left-3 top-3.5 text-zinc-500" />
-                        <input 
-                            type="password" 
-                            className="w-full bg-black/40 border border-zinc-700 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-zinc-600"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                        />
-                    </div>
-                </div>
+                <Input label="Email" icon={Mail} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
+                <Input label="Password" icon={Lock} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
 
                 <Button fullWidth className="mt-2" disabled={loading}>
                     {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
@@ -110,49 +70,20 @@ export const LoginView: React.FC = () => {
             </form>
 
             <div className="mt-4 text-center">
-                <button 
-                    onClick={toggleMode}
-                    className="text-xs text-zinc-400 hover:text-white transition-colors"
-                >
-                    {mode === 'login' 
-                        ? "Don't have an account? Sign up" 
-                        : "Already have an account? Sign in"}
+                <button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')} className="text-xs text-zinc-400 hover:text-white transition-colors">
+                    {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
                 </button>
             </div>
         </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 w-full mb-6">
-            <div className="h-px bg-zinc-800 flex-1" />
-            <span className="text-xs text-zinc-600 font-medium">OR</span>
-            <div className="h-px bg-zinc-800 flex-1" />
-        </div>
-
-        {/* Alternative Auth Buttons */}
         <div className="w-full space-y-3">
-          <button
-            onClick={loginWithGoogle}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-100 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-             <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            <span>Continue with Google</span>
+          <button onClick={loginWithGoogle} disabled={loading} className="w-full flex items-center justify-center gap-3 bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-100 transition-all">
+             <span>Continue with Google</span>
           </button>
-
-          <button 
-             onClick={loginAsGuest}
-             disabled={loading}
-             className="w-full text-zinc-500 font-medium text-sm hover:text-zinc-300 transition-colors py-2"
-          >
+          <button onClick={loginAsGuest} disabled={loading} className="w-full text-zinc-500 font-medium text-sm hover:text-zinc-300 transition-colors py-2">
              Continue as Guest
           </button>
         </div>
-        
       </div>
     </div>
   );

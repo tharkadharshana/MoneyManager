@@ -1,17 +1,23 @@
 import React, { useState, useRef } from 'react';
 import { TransactionList } from './TransactionList';
 import { Card } from './ui/Card';
-import { TrendingUp, ArrowUpRight, ArrowDownLeft, Wallet, Building2, CreditCard, DollarSign, Plus, Sparkles } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, ArrowDownLeft, Wallet, Building2, CreditCard, DollarSign, Plus, Sparkles, User, Settings, LogOut } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { TransactionType, TransactionStatus } from '../types';
+import { Modal } from './ui/Modal';
+import { Select } from './ui/Select';
+import { Button } from './ui/Button';
+import { useAuth } from '../context/AuthContext';
 
 interface DashboardProps {
   onNavigate?: (tab: string) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
-  const { accounts, transactions, loading } = useData();
+  const { accounts, transactions, loading, settings, updateSettings } = useData();
+  const { user, logout } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showSettings, setShowSettings] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Helper to calculate stats for Global or Per-Account
@@ -49,6 +55,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           setActiveIndex(index);
       }
   };
+
+  const currencyCode = settings?.currency || 'USD';
 
   // Empty State Check
   if (!loading && transactions.length === 0 && accounts.length === 0) {
@@ -106,7 +114,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               </div>
 
               <h2 className="text-3xl font-bold text-white mb-6 mt-2 tracking-tight">
-                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(balance)}
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(balance)}
               </h2>
               
               <div className="mt-auto">
@@ -115,14 +123,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                         <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wide">Expenses</span>
                         <div className="flex items-center gap-1.5 text-red-500">
                         <ArrowUpRight size={14} />
-                        <span className="font-bold text-sm">${stats.expenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <span className="font-bold text-sm">
+                            {stats.expenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
                         </div>
                     </div>
                     
                     <div className="flex flex-col gap-1 items-end">
                         <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wide">Income</span>
                         <div className="flex items-center gap-1.5 text-emerald-500">
-                        <span className="font-bold text-sm">${stats.income.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <span className="font-bold text-sm">
+                            {stats.income.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
                         <ArrowDownLeft size={14} />
                         </div>
                     </div>
@@ -151,14 +163,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   ];
 
   return (
-    <div className="p-4 space-y-6 pb-24">
+    <div className="p-4 space-y-6 pb-24 relative min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center pt-2 px-1">
         <div>
           <h1 className="text-2xl font-bold text-white">Good Morning</h1>
           <p className="text-zinc-400 text-sm">Here's your financial overview</p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-blue-500 border-2 border-zinc-950 shadow-lg" />
+        <button 
+            onClick={() => setShowSettings(true)}
+            className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-blue-500 border-2 border-zinc-950 shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        >
+            {user?.photoURL ? (
+                <img src={user.photoURL} alt="Profile" className="w-full h-full rounded-full object-cover" />
+            ) : (
+                <User size={20} className="text-white opacity-90" />
+            )}
+        </button>
       </div>
 
       {/* Swappable Cards Carousel */}
@@ -227,6 +248,54 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         </div>
         <TransactionList limit={5} />
       </div>
+
+      {/* Settings Modal */}
+      <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Settings">
+          <div className="space-y-6">
+              <div className="flex items-center gap-4 p-3 bg-zinc-900 rounded-xl border border-zinc-800">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-blue-500 flex items-center justify-center text-white font-bold text-xl">
+                      {user?.displayName ? user.displayName[0] : 'U'}
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                      <h4 className="text-white font-medium truncate">{user?.displayName || 'User'}</h4>
+                      <p className="text-zinc-500 text-xs truncate">{user?.email || 'Guest Account'}</p>
+                  </div>
+              </div>
+
+              <div>
+                  <Select 
+                      label="Preferred Currency"
+                      value={settings.currency}
+                      onChange={(e) => updateSettings({ currency: e.target.value })}
+                      options={[
+                          { value: 'USD', label: 'USD - US Dollar ($)' },
+                          { value: 'EUR', label: 'EUR - Euro (€)' },
+                          { value: 'GBP', label: 'GBP - British Pound (£)' },
+                          { value: 'LKR', label: 'LKR - Sri Lankan Rupee (Rs)' },
+                          { value: 'INR', label: 'INR - Indian Rupee (₹)' },
+                          { value: 'JPY', label: 'JPY - Japanese Yen (¥)' },
+                          { value: 'AUD', label: 'AUD - Australian Dollar ($)' },
+                      ]}
+                  />
+                  <p className="text-[10px] text-zinc-500 mt-2">
+                      This will update the display currency across your dashboard. 
+                      Note: It does not convert transaction amounts, only changes the symbol.
+                  </p>
+              </div>
+
+              <div className="pt-4 border-t border-zinc-800">
+                  <Button 
+                      variant="danger" 
+                      fullWidth 
+                      onClick={logout}
+                      className="bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                  >
+                      <LogOut size={16} className="mr-2" />
+                      Sign Out
+                  </Button>
+              </div>
+          </div>
+      </Modal>
     </div>
   );
 };

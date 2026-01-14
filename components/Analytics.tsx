@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  BarChart, Bar, Cell, PieChart, Pie, Legend
+  PieChart, Pie, Cell, Legend, BarChart, Bar
 } from 'recharts';
 import { CATEGORIES } from '../constants';
 import { useData } from '../context/DataContext';
@@ -79,40 +79,38 @@ export const Analytics: React.FC = () => {
     return Array.from(merchMap.entries())
         .map(([name, value]) => ({ name, value }))
         .sort((a, b) => b.value - a.value)
-        .slice(0, 5);
+        .slice(0, 10);
   }, [transactions]);
 
   // 4. Spending by Time of Day
   const timeOfDayData = useMemo(() => {
     const expenses = transactions.filter(t => t.type === TransactionType.EXPENSE);
     const timeMap = {
-        'Morning (5-11)': 0,
-        'Afternoon (12-16)': 0,
-        'Evening (17-21)': 0,
-        'Night (22-4)': 0
+        'Morning': 0,
+        'Afternoon': 0,
+        'Evening': 0,
+        'Night': 0
     };
 
     expenses.forEach(tx => {
         const hour = new Date(tx.date).getHours();
-        if (hour >= 5 && hour <= 11) timeMap['Morning (5-11)'] += Math.abs(tx.amount);
-        else if (hour >= 12 && hour <= 16) timeMap['Afternoon (12-16)'] += Math.abs(tx.amount);
-        else if (hour >= 17 && hour <= 21) timeMap['Evening (17-21)'] += Math.abs(tx.amount);
-        else timeMap['Night (22-4)'] += Math.abs(tx.amount);
+        if (hour >= 5 && hour <= 11) timeMap['Morning'] += Math.abs(tx.amount);
+        else if (hour >= 12 && hour <= 16) timeMap['Afternoon'] += Math.abs(tx.amount);
+        else if (hour >= 17 && hour <= 21) timeMap['Evening'] += Math.abs(tx.amount);
+        else timeMap['Night'] += Math.abs(tx.amount);
     });
 
-    return Object.entries(timeMap).map(([name, value]) => ({ name: name.split(' ')[0], full: name, value }));
+    return Object.entries(timeMap).map(([name, value]) => ({ name, value }));
   }, [transactions]);
 
   // Generate AI Tips
   const generateInsights = async () => {
     setIsAnalyzing(true);
     try {
-        // Refresh summary to ensure we save the latest state to Firestore for future/chat use
         await refreshFinancialSummary();
         
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
-        // Use the refreshed summary if available, otherwise fallback to local calcs
         let promptData = "";
         if (financialSummary) {
             promptData = JSON.stringify(financialSummary, null, 2);
@@ -154,7 +152,29 @@ export const Analytics: React.FC = () => {
     }
   };
 
-  const PIE_COLORS = categoryData.map(c => c.color);
+  // Custom Label Renderer for Pie Charts
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius * 1.25;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="#e4e4e7" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        fontSize={10}
+        fontWeight={500}
+      >
+        {`${name}`}
+      </text>
+    );
+  };
+
+  const MERCHANT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'];
 
   return (
     <div className="p-4 space-y-6 pb-28 relative min-h-screen">
@@ -222,16 +242,18 @@ export const Analytics: React.FC = () => {
             <h3 className="text-zinc-400 text-sm font-medium mb-4">Category Breakdown</h3>
             <div className="h-64 w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
+                    <PieChart margin={{ top: 20, bottom: 20 }}>
                         <Pie
                             data={categoryData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
+                            innerRadius={55}
+                            outerRadius={75}
                             paddingAngle={5}
                             dataKey="value"
                             stroke="none"
+                            label={renderCustomLabel}
+                            labelLine={{ stroke: '#52525b', strokeWidth: 1 }}
                         >
                             {categoryData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
@@ -241,48 +263,53 @@ export const Analytics: React.FC = () => {
                              contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '12px', color: '#fff' }}
                              formatter={(value: number) => [`$${value.toFixed(0)}`, '']}
                         />
-                        <Legend 
-                            verticalAlign="bottom" 
-                            height={36} 
-                            iconType="circle"
-                            formatter={(value) => <span className="text-zinc-400 text-xs ml-1">{value}</span>}
-                        />
                     </PieChart>
                 </ResponsiveContainer>
                 {/* Center Label */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
-                     <span className="text-zinc-500 text-xs font-medium">Expenses</span>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-4">
+                     <div className="flex flex-col items-center">
+                        <span className="text-white text-sm font-bold tracking-tight">Expenses</span>
+                        <span className="text-zinc-500 text-[10px] font-medium">Top 5</span>
+                     </div>
                 </div>
             </div>
         </div>
 
-        {/* 3. Top Merchants (Bar Chart) */}
+        {/* 3. Top Merchants (Pie Chart - Replaced Bar Chart) */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-sm">
-            <h3 className="text-zinc-400 text-sm font-medium mb-4">Top Spending by Merchant</h3>
-            <div className="h-60 w-full">
+            <h3 className="text-zinc-400 text-sm font-medium mb-4">Top Spending by Merchant (Top 10)</h3>
+            <div className="h-64 w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart layout="vertical" data={merchantData} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#27272a" />
-                        <XAxis type="number" hide />
-                        <YAxis 
-                            dataKey="name" 
-                            type="category" 
-                            tick={{ fill: '#a1a1aa', fontSize: 11 }} 
-                            width={100}
-                            interval={0}
-                        />
+                    <PieChart margin={{ top: 20, bottom: 20 }}>
+                        <Pie
+                            data={merchantData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={55}
+                            outerRadius={75}
+                            paddingAngle={5}
+                            dataKey="value"
+                            stroke="none"
+                            label={renderCustomLabel}
+                            labelLine={{ stroke: '#52525b', strokeWidth: 1 }}
+                        >
+                            {merchantData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={MERCHANT_COLORS[index % MERCHANT_COLORS.length]} />
+                            ))}
+                        </Pie>
                         <Tooltip 
-                            cursor={{fill: '#27272a'}}
                             contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '12px', color: '#fff' }}
                             formatter={(value: number) => [`$${value.toFixed(0)}`, 'Spent']}
                         />
-                        <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                            {merchantData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#60a5fa'} />
-                            ))}
-                        </Bar>
-                    </BarChart>
+                    </PieChart>
                 </ResponsiveContainer>
+                {/* Center Label */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-4">
+                     <div className="flex flex-col items-center">
+                        <span className="text-white text-sm font-bold tracking-tight">Merchants</span>
+                        <span className="text-zinc-500 text-[10px] font-medium">Top 10</span>
+                     </div>
+                </div>
             </div>
         </div>
 

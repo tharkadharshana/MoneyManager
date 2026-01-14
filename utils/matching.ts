@@ -20,7 +20,8 @@ export interface ReceiptCandidate {
   amount: number;
   date: Date;
   merchantName: string;
-  currency?: string; // Added currency support
+  currency?: string; 
+  categoryId?: string; // Added field for category
 }
 
 /**

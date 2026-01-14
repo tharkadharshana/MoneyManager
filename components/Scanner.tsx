@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Upload, FileText, X, Check, BrainCircuit, Tag, Lock, Trash2, PlusCircle, AlertCircle, Edit2 } from 'lucide-react';
+import { Upload, FileText, X, Check, BrainCircuit, Tag, Lock, Trash2, PlusCircle, AlertCircle, Edit2, ArrowRight } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { Modal } from './ui/Modal';
 import { useScanner } from '../hooks/useScanner';
 import { useWallet } from '../context/WalletContext';
+import { CATEGORIES } from '../constants';
 
 export const Scanner: React.FC = () => {
   const { accounts } = useWallet();
@@ -19,10 +20,13 @@ export const Scanner: React.FC = () => {
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const [tempPassword, setTempPassword] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   
   // Edit Modal State
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ merchantName: '', amount: '', currency: '' });
+  const [editForm, setEditForm] = useState({ merchantName: '', amount: '', currency: '', categoryId: '' });
+
+  const targetAccount = accounts.find(a => a.id === selectedAccountId) || accounts[0];
 
   // UI Helpers
   const handleDrag = (e: React.DragEvent) => {
@@ -40,8 +44,18 @@ export const Scanner: React.FC = () => {
   };
 
   const onConfirm = async () => {
-      await confirmMatch(selectedAccountId);
-      setTimeout(reset, 2000);
+      if (isConfirming) return;
+      setIsConfirming(true);
+      try {
+          await confirmMatch(selectedAccountId);
+          setTimeout(() => {
+              setIsConfirming(false);
+              reset();
+          }, 2000);
+      } catch (e) {
+          setIsConfirming(false);
+          console.error("Confirmation failed", e);
+      }
   };
   
   const startEdit = (index: number) => {
@@ -49,7 +63,8 @@ export const Scanner: React.FC = () => {
       setEditForm({
           merchantName: item.merchantName,
           amount: Math.abs(item.amount).toString(),
-          currency: item.currency || 'USD'
+          currency: item.currency || 'USD',
+          categoryId: item.categoryId || ''
       });
       setEditingIndex(index);
   };
@@ -59,13 +74,24 @@ export const Scanner: React.FC = () => {
           updateItem(editingIndex, {
               merchantName: editForm.merchantName,
               amount: parseFloat(editForm.amount) * (ocrResults[editingIndex].amount < 0 ? -1 : 1), // Preserve sign
-              currency: editForm.currency
+              currency: editForm.currency,
+              categoryId: editForm.categoryId || undefined
           });
       }
       setEditingIndex(null);
   };
 
   const isBulk = ocrResults.length > 1;
+
+  // Prepare categories for dropdown
+  const categoryOptions = [
+      { value: '', label: 'Select Category...' },
+      ...CATEGORIES.map(c => ({ value: c.id, label: c.name }))
+  ];
+
+  const getCategoryName = (id?: string) => {
+      return CATEGORIES.find(c => c.id === id)?.name || 'Uncategorized';
+  };
 
   return (
     <div className="p-4 space-y-6 pb-24 h-full flex flex-col relative">
@@ -77,6 +103,9 @@ export const Scanner: React.FC = () => {
                   <Check size={40} className="text-black" />
               </div>
               <h2 className="text-2xl font-bold text-white">{successMessage}</h2>
+              {targetAccount && (
+                  <p className="text-zinc-400 text-sm mt-2">Added to {targetAccount.name}</p>
+              )}
           </div>
       ) : (
       <>
@@ -170,15 +199,17 @@ export const Scanner: React.FC = () => {
       {ocrResults.length > 0 && (
          <div className="flex-1 flex flex-col gap-4 overflow-hidden relative">
             <div className="bg-surface rounded-2xl p-4 border border-zinc-800 flex flex-col h-full">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <BrainCircuit size={16} className="text-primary" />
                         <span className="text-xs font-semibold text-primary uppercase tracking-wider">Review Data</span>
                     </div>
-                    {isBulk && (
-                        <span className="text-xs bg-zinc-800 text-white px-2 py-1 rounded-full">
-                            {ocrResults.length} Items
-                        </span>
+                    {/* Target Account Badge */}
+                    {targetAccount && (
+                        <div className="flex items-center gap-1.5 bg-zinc-800 px-2 py-1 rounded-lg border border-zinc-700">
+                            <span className="text-[10px] text-zinc-400">To:</span>
+                            <span className="text-[10px] font-medium text-white truncate max-w-[100px]">{targetAccount.name}</span>
+                        </div>
                     )}
                 </div>
 
@@ -196,9 +227,12 @@ export const Scanner: React.FC = () => {
                             <div key={idx} className="flex justify-between items-center p-3 bg-zinc-900/50 rounded-xl border border-zinc-800/50 hover:border-zinc-700 transition-colors group">
                                 <div className="flex-1 min-w-0 mr-3">
                                     <p className="font-medium text-zinc-200 text-sm truncate">{item.merchantName}</p>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 flex-wrap">
                                         <p className="text-xs text-zinc-500">{item.date.toLocaleDateString()}</p>
                                         <span className="text-[10px] text-zinc-600 px-1.5 py-0.5 bg-zinc-800 rounded">{item.currency || 'USD'}</span>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded border ${item.categoryId ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 'text-amber-500 bg-amber-500/10 border-amber-500/20'}`}>
+                                            {getCategoryName(item.categoryId)}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end">
@@ -233,6 +267,7 @@ export const Scanner: React.FC = () => {
                                 <p className="font-medium text-zinc-300 mb-1">Extracted:</p>
                                 <p>Merchant: {ocrResults[0].merchantName}</p>
                                 <p>Amount: {Math.abs(ocrResults[0].amount).toFixed(2)} {ocrResults[0].currency}</p>
+                                <p className="mt-1 text-indigo-400">Category: {getCategoryName(ocrResults[0].categoryId)}</p>
                             </div>
                             <button 
                                 onClick={() => startEdit(0)}
@@ -264,9 +299,9 @@ export const Scanner: React.FC = () => {
             </div>
             
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-background border-t border-zinc-800 flex gap-3 z-30">
-                 <Button variant="secondary" onClick={reset} className="flex-1">Discard</Button>
-                 <Button variant="primary" onClick={onConfirm} className="flex-1">
-                     {isBulk ? `Confirm & Import (${ocrResults.length})` : 'Confirm'}
+                 <Button variant="secondary" onClick={reset} className="flex-1" disabled={isConfirming}>Discard</Button>
+                 <Button variant="primary" onClick={onConfirm} className="flex-1" disabled={isConfirming}>
+                     {isConfirming ? 'Saving...' : (isBulk ? `Confirm & Import (${ocrResults.length})` : 'Confirm')}
                  </Button>
             </div>
          </div>
@@ -280,6 +315,14 @@ export const Scanner: React.FC = () => {
                 value={editForm.merchantName} 
                 onChange={e => setEditForm(prev => ({...prev, merchantName: e.target.value}))} 
              />
+             
+             <Select 
+                label="Category"
+                value={editForm.categoryId}
+                onChange={e => setEditForm(prev => ({...prev, categoryId: e.target.value}))}
+                options={categoryOptions}
+             />
+
              <div className="flex gap-4">
                  <div className="flex-1">
                     <Input 

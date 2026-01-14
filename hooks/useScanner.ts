@@ -8,7 +8,7 @@ import { CATEGORIES, CURRENT_USER_ID } from '../constants';
 import { normalizeString, jaroWinkler } from '../utils/stringUtils';
 
 export const useScanner = () => {
-    const { transactions, accounts, addTransaction, updateTransaction } = useWallet();
+    const { transactions, accounts, addTransaction, updateTransaction, categoryRules } = useWallet();
     const [file, setFile] = useState<File | null>(null);
     const [processing, setProcessing] = useState(false);
     const [passwordRequired, setPasswordRequired] = useState(false);
@@ -95,7 +95,15 @@ export const useScanner = () => {
                 if (reversedFound) {
                     removedIndices.add(i);
                 } else {
-                    validData.push(parsedData[i]);
+                    // --- AUTO CATEGORIZATION WITH HISTORY & RULES ---
+                    const item = parsedData[i];
+                    // Pass transaction history AND category rules
+                    const catResult = autoCategorize(item.merchantName, transactions, categoryRules);
+                    
+                    validData.push({
+                        ...item,
+                        categoryId: catResult.categoryId || undefined // Store predicted category
+                    });
                 }
             }
             
@@ -114,13 +122,12 @@ export const useScanner = () => {
                     details: result.details
                 });
 
-                const catResult = autoCategorize(singleItem.merchantName);
-                if (catResult.categoryId) {
-                    const catName = CATEGORIES.find(c => c.id === catResult.categoryId)?.name || 'Unknown';
+                if (singleItem.categoryId) {
+                    const catName = CATEGORIES.find(c => c.id === singleItem.categoryId)?.name || 'Unknown';
                     setSuggestedCategory({
-                        id: catResult.categoryId,
+                        id: singleItem.categoryId,
                         name: catName,
-                        confidence: catResult.confidence
+                        confidence: 0.9
                     });
                 }
             } else {
@@ -162,8 +169,15 @@ export const useScanner = () => {
         else if (ocrResults.length > 0) {
             let importCount = 0;
             for (const item of ocrResults) {
-                const catResult = autoCategorize(item.merchantName);
+                // Use the category ID that is already in the item (either auto-detected or manually edited)
+                // Fallback to auto-detection if somehow missing, but respect the edit
+                let categoryId = item.categoryId;
                 
+                if (!categoryId) {
+                     const catResult = autoCategorize(item.merchantName, transactions, categoryRules);
+                     categoryId = catResult.categoryId || undefined;
+                }
+
                 const newTx: Transaction = {
                     id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                     userId: CURRENT_USER_ID,
@@ -176,7 +190,8 @@ export const useScanner = () => {
                     descriptionEnriched: item.merchantName,
                     type: item.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
                     status: TransactionStatus.CLEARED, 
-                    categoryId: catResult.categoryId || undefined,
+                    // Safely add categoryId only if it exists
+                    ...(categoryId ? { categoryId } : {}),
                     isRecurring: false,
                     isSplit: false,
                     splits: [],

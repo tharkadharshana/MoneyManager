@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { Transaction, Account, FinancialSummary } from '../types';
+import { Transaction, Account, FinancialSummary, CategoryRule, UserSettings } from '../types';
 
 export const FirestoreService = {
   // Transactions
@@ -72,6 +72,51 @@ export const FirestoreService = {
       await docRef.set(summary, { merge: true });
     } catch (e) {
       console.error("Error saving summary:", e);
+    }
+  },
+
+  // Categorization Rules
+  getCategoryRules: async (userId: string): Promise<CategoryRule[]> => {
+    try {
+        const docRef = db.collection('users').doc(userId).collection('settings').doc('rules');
+        const snap = await docRef.get();
+        if (snap.exists && snap.data()?.rules) {
+            return snap.data()?.rules as CategoryRule[];
+        }
+        return [];
+    } catch (e) {
+        console.error("Error getting rules:", e);
+        return [];
+    }
+  },
+
+  saveCategoryRules: async (userId: string, rules: CategoryRule[]) => {
+      try {
+          const docRef = db.collection('users').doc(userId).collection('settings').doc('rules');
+          await docRef.set({ rules }, { merge: true });
+      } catch (e) {
+          console.error("Error saving rules:", e);
+      }
+  },
+
+  // User Settings
+  getUserSettings: async (userId: string): Promise<UserSettings | null> => {
+    try {
+      const docRef = db.collection('users').doc(userId).collection('settings').doc('preferences');
+      const snap = await docRef.get();
+      return snap.exists ? (snap.data() as UserSettings) : null;
+    } catch (e) {
+      console.error("Error fetching settings:", e);
+      return null;
+    }
+  },
+
+  saveUserSettings: async (userId: string, settings: UserSettings) => {
+    try {
+      const docRef = db.collection('users').doc(userId).collection('settings').doc('preferences');
+      await docRef.set(settings, { merge: true });
+    } catch (e) {
+      console.error("Error saving settings:", e);
     }
   }
 };

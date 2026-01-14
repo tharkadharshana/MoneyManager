@@ -1,17 +1,67 @@
-import { Category, Account, Transaction, TransactionType, TransactionStatus } from './types';
+import { Category, Account, Transaction, TransactionType, TransactionStatus, CategoryRule } from './types';
 
 export const CURRENT_USER_ID = 'user_123';
 
-// System Categories (Configuration, not fake user data)
+// System Categories (Expanded to match common bank statement rules)
 export const CATEGORIES: Category[] = [
-  { id: 'cat_1', name: 'Food & Drink', color: '#f59e0b', icon: 'coffee' },
-  { id: 'cat_2', name: 'Transport', color: '#3b82f6', icon: 'car' },
-  { id: 'cat_3', name: 'Shopping', color: '#ec4899', icon: 'shopping-bag' },
-  { id: 'cat_4', name: 'Salary', color: '#10b981', icon: 'banknote' },
-  { id: 'cat_5', name: 'Utilities', color: '#6366f1', icon: 'zap' },
+  { id: 'cat_1', name: 'Food & Drink', color: '#f59e0b', icon: 'coffee' }, // Dining, Restaurants
+  { id: 'cat_2', name: 'Transport', color: '#3b82f6', icon: 'car' }, // Ride Hailing, Fuel
+  { id: 'cat_3', name: 'Shopping', color: '#ec4899', icon: 'shopping-bag' }, 
+  { id: 'cat_4', name: 'Salary', color: '#10b981', icon: 'banknote' }, // Income
+  { id: 'cat_5', name: 'Utilities', color: '#6366f1', icon: 'zap' }, // Mobile Bill, Internet
   { id: 'cat_6', name: 'Entertainment', color: '#8b5cf6', icon: 'film' },
-  { id: 'cat_7', name: 'Health', color: '#ef4444', icon: 'activity' },
-  { id: 'cat_8', name: 'Housing', color: '#14b8a6', icon: 'home' },
+  { id: 'cat_7', name: 'Health', color: '#ef4444', icon: 'activity' }, // Medical
+  { id: 'cat_8', name: 'Housing', color: '#14b8a6', icon: 'home' }, // Rent
+  { id: 'cat_9', name: 'Groceries', color: '#84cc16', icon: 'shopping-cart' },
+  { id: 'cat_10', name: 'Bank Fees', color: '#64748b', icon: 'receipt' },
+  { id: 'cat_11', name: 'Loans', color: '#f97316', icon: 'credit-card' },
+  { id: 'cat_12', name: 'Transfers', color: '#06b6d4', icon: 'refresh-cw' },
+];
+
+// Default Rules to seed into Firestore for new users
+export const DEFAULT_CATEGORY_RULES: CategoryRule[] = [
+    { pattern: "Annual Fee", category: "Bank Fees", company: "Bank" },
+    { pattern: "ATMCASH", category: "Transfers", company: "Bank" },
+    { pattern: "Cash Advance", category: "Bank Fees", company: "Bank" },
+    { pattern: "WEPAY TOPUP", category: "Transfers", company: "WePay" },
+    { pattern: "CONVERT TO CIP", category: "Loans", company: "Bank" },
+    { pattern: "LATE PAYMENT FEE", category: "Bank Fees", company: "Bank" },
+    { pattern: "Processing Fee", category: "Bank Fees", company: "Bank" },
+    { pattern: "Installment", category: "Loans", company: "Bank" },
+    { pattern: "PickMe", category: "Transport", company: "PickMe" },
+    { pattern: "UBER", category: "Transport", company: "Uber" },
+    { pattern: "FUTURE GEN", category: "Shopping", company: "Future Gen" },
+    { pattern: "CEFT CARD", category: "Transfers", company: "Bank" },
+    { pattern: "INTEREST CHARGE", category: "Bank Fees", company: "Bank" },
+    { pattern: "Dialog", category: "Utilities", company: "Dialog" },
+    { pattern: "AIRTEL", category: "Utilities", company: "Airtel" },
+    { pattern: "Salary", category: "Salary", company: "Employer" },
+    { pattern: "SPAR", category: "Groceries", company: "SPAR" },
+    { pattern: "KEELLS", category: "Groceries", company: "Keells" },
+    { pattern: "GREEN BLOOM", category: "Shopping", company: "Green Bloom" },
+    { pattern: "C/Card Payment", category: "Transfers", company: "Bank" },
+    { pattern: "RESTAURANT", category: "Food & Drink", company: "Restaurant" },
+    { pattern: "TRADERS", category: "Shopping", company: "Traders" },
+    { pattern: "HUTCHISON", category: "Utilities", company: "Hutch" },
+    { pattern: "PUSSELLA MEAT", category: "Groceries", company: "Pussella" },
+    { pattern: "student loan", category: "Loans", company: "Loan Provider" },
+    { pattern: "dfcc", category: "Transfers", company: "DFCC" },
+    { pattern: "hnb", category: "Transfers", company: "HNB" },
+    { pattern: "KOKO", category: "Food & Drink", company: "Koko" },
+    { pattern: "rent for", category: "Housing", company: "Landlord" },
+    { pattern: "Google CLOUD", category: "Utilities", company: "Google" },
+    { pattern: "loan on card", category: "Loans", company: "Bank" },
+    { pattern: "ARCADIA", category: "Entertainment", company: "Arcadia" },
+    { pattern: "MOVIE WORKS", category: "Entertainment", company: "Movie Works" },
+    { pattern: "EMPIRE CARPETS", category: "Shopping", company: "Empire" },
+    { pattern: "RED LANTERN", category: "Food & Drink", company: "Red Lantern" },
+    { pattern: "LADY J", category: "Shopping", company: "Lady J" },
+    { pattern: "APPLE.COM", category: "Entertainment", company: "Apple" },
+    { pattern: "DEPARTMENT OF IMMIGRATION", category: "Bank Fees", company: "Gov" },
+    { pattern: "MEDICAL", category: "Health", company: "Medical" },
+    { pattern: "DARAZ", category: "Shopping", company: "Daraz" },
+    { pattern: "WATERS EDGE", category: "Food & Drink", company: "Waters Edge" },
+    { pattern: "STUDIO UDAYA", category: "Shopping", company: "Studio Udaya" }
 ];
 
 // --- MOCK DATA FOR GUEST MODE ---

@@ -25,6 +25,10 @@ export enum PaymentMethod {
   OTHER = 'OTHER'
 }
 
+export interface UserSettings {
+  currency: string;
+}
+
 export interface Merchant {
   id: string;
   name: string;
@@ -40,6 +44,12 @@ export interface Category {
   icon: string;
   parentId?: string;
   isTaxRelevant?: boolean;
+}
+
+export interface CategoryRule {
+  pattern: string;   // Text to match (e.g. "UBER")
+  category: string;  // Category Name (e.g. "Transport")
+  company?: string;  // Optional company name
 }
 
 export interface Receipt {

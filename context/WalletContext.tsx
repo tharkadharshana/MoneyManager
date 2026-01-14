@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Transaction, Account, FinancialSummary, TransactionType, TransactionStatus } from '../types';
-import { MOCK_TRANSACTIONS, MOCK_ACCOUNTS, CATEGORIES } from '../constants';
+import { Transaction, Account, FinancialSummary, TransactionType, TransactionStatus, CategoryRule, UserSettings } from '../types';
+import { MOCK_TRANSACTIONS, MOCK_ACCOUNTS, CATEGORIES, DEFAULT_CATEGORY_RULES } from '../constants';
 import { useAuth } from './AuthContext';
 import { FirestoreService } from '../services/firestoreService';
 
@@ -8,6 +8,8 @@ interface WalletContextType {
   transactions: Transaction[];
   accounts: Account[];
   financialSummary: FinancialSummary | null;
+  categoryRules: CategoryRule[];
+  settings: UserSettings;
   dataLoading: boolean;
   error: string | null;
   addTransaction: (tx: Transaction) => Promise<void>;
@@ -16,6 +18,7 @@ interface WalletContextType {
   updateAccount: (id: string, updates: Partial<Account>) => Promise<void>;
   deleteAccount: (id: string) => Promise<void>;
   refreshFinancialSummary: () => Promise<void>;
+  updateSettings: (settings: Partial<UserSettings>) => Promise<void>;
   clearError: () => void;
 }
 
@@ -26,6 +29,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary | null>(null);
+  const [categoryRules, setCategoryRules] = useState<CategoryRule[]>([]);
+  const [settings, setSettings] = useState<UserSettings>({ currency: 'USD' });
   const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +40,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         setTransactions([]);
         setAccounts([]);
         setFinancialSummary(null);
+        setCategoryRules([]);
+        setSettings({ currency: 'USD' });
         setDataLoading(false);
         return;
     }
@@ -42,6 +49,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (isDemoMode) {
         setTransactions(MOCK_TRANSACTIONS);
         setAccounts(MOCK_ACCOUNTS);
+        setCategoryRules(DEFAULT_CATEGORY_RULES);
+        setSettings({ currency: 'USD' });
         // Mock summary generation
         setFinancialSummary({
             totalIncome: 3200,
@@ -84,6 +93,22 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Load summary once on init
     FirestoreService.getFinancialSummary(user.uid).then((summary) => {
         if (summary) setFinancialSummary(summary);
+    }).catch(err => console.error(err));
+
+    // Load Rules
+    FirestoreService.getCategoryRules(user.uid).then(async (rules) => {
+        if (rules.length > 0) {
+            setCategoryRules(rules);
+        } else {
+            // Seed default rules if none exist
+            await FirestoreService.saveCategoryRules(user.uid, DEFAULT_CATEGORY_RULES);
+            setCategoryRules(DEFAULT_CATEGORY_RULES);
+        }
+    });
+
+    // Load Settings
+    FirestoreService.getUserSettings(user.uid).then((s) => {
+        if (s) setSettings(s);
     }).catch(err => console.error(err));
 
     return () => {
@@ -229,6 +254,14 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const updateSettings = async (newSettings: Partial<UserSettings>) => {
+      const updated = { ...settings, ...newSettings };
+      setSettings(updated);
+      if (user && !isDemoMode) {
+          await FirestoreService.saveUserSettings(user.uid, updated);
+      }
+  };
+
   const refreshFinancialSummary = async () => {
     try {
         // 1. Calculate Stats Locally
@@ -295,6 +328,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       transactions,
       accounts,
       financialSummary,
+      categoryRules,
+      settings,
       dataLoading,
       error,
       addTransaction,
@@ -303,6 +338,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       updateAccount,
       deleteAccount,
       refreshFinancialSummary,
+      updateSettings,
       clearError: () => setError(null)
     }}>
       {children}

@@ -31,7 +31,7 @@ function AppContent() {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Dashboard />;
+        return <Dashboard onNavigate={setActiveTab} />;
       case 'analytics':
         return <Analytics />;
       case 'scan':
@@ -58,7 +58,7 @@ function AppContent() {
           </div>
         );
       default:
-        return <Dashboard />;
+        return <Dashboard onNavigate={setActiveTab} />;
     }
   };
 

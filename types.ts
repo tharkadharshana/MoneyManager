@@ -158,3 +158,13 @@ export interface CategoryBreakdown {
   value: number;
   color: string;
 }
+
+export interface FinancialSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  netWorth: number;
+  topCategories: { name: string; amount: number }[];
+  topMerchants: { name: string; amount: number }[];
+  monthlySpending: { month: string; amount: number }[];
+  lastUpdated: string;
+}

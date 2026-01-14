@@ -3,12 +3,14 @@ import {
   addDoc, 
   updateDoc, 
   doc, 
+  getDoc,
+  setDoc,
   onSnapshot, 
   query, 
   orderBy 
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Transaction, Account } from '../types';
+import { Transaction, Account, FinancialSummary } from '../types';
 
 export const FirestoreService = {
   // Transactions
@@ -60,5 +62,26 @@ export const FirestoreService = {
   updateAccount: async (userId: string, accId: string, updates: Partial<Account>) => {
     const accRef = doc(db, 'users', userId, 'accounts', accId);
     return await updateDoc(accRef, updates);
+  },
+
+  // Financial Summary
+  getFinancialSummary: async (userId: string): Promise<FinancialSummary | null> => {
+    try {
+      const docRef = doc(db, 'users', userId, 'summary', 'overview');
+      const snap = await getDoc(docRef);
+      return snap.exists() ? (snap.data() as FinancialSummary) : null;
+    } catch (e) {
+      console.error("Error fetching summary:", e);
+      return null;
+    }
+  },
+
+  saveFinancialSummary: async (userId: string, summary: FinancialSummary) => {
+    try {
+      const docRef = doc(db, 'users', userId, 'summary', 'overview');
+      await setDoc(docRef, summary, { merge: true });
+    } catch (e) {
+      console.error("Error saving summary:", e);
+    }
   }
 };

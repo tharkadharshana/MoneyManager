@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Transaction, TransactionStatus, TransactionType } from '../types';
 import { CATEGORIES } from '../constants';
 import { Card } from './ui/Card';
-import { ArrowUpRight, ArrowDownLeft, CheckCircle2, AlertCircle, Receipt, Split } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, CheckCircle2, AlertCircle, Receipt, Split, FileCheck } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 interface TransactionListProps {
@@ -111,8 +111,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({ limit, showFil
                       </span>
                       
                       {isMatched && (
-                        <span className="flex items-center gap-0.5 text-[10px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                          <CheckCircle2 size={10} /> Matched
+                        <span className="flex items-center gap-1 text-[10px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                          <FileCheck size={10} /> Receipt Linked
                         </span>
                       )}
                       
@@ -131,9 +131,6 @@ export const TransactionList: React.FC<TransactionListProps> = ({ limit, showFil
                   }`}>
                     {isExpense ? '' : '+'}{formatMoney(tx.amount, tx.currency)}
                   </span>
-                  <div className="flex gap-2">
-                    {tx.receipts && tx.receipts.length > 0 && <Receipt size={12} className="text-zinc-500" />}
-                  </div>
                 </div>
               </Card>
             );

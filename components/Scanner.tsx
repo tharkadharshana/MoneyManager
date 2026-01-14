@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Upload, FileText, X, Check, BrainCircuit, Tag, Lock, AlertCircle } from 'lucide-react';
+import { Upload, FileText, X, Check, BrainCircuit, Tag, Lock, Trash2, PlusCircle, AlertCircle, Edit2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
+import { Modal } from './ui/Modal';
 import { useScanner } from '../hooks/useScanner';
 import { useWallet } from '../context/WalletContext';
 
@@ -10,13 +11,18 @@ export const Scanner: React.FC = () => {
   const { accounts } = useWallet();
   const { 
       file, setFile, processing, passwordRequired, matchResult, 
-      suggestedCategory, ocrResult, successMessage, 
-      processFile, confirmMatch, reset 
+      ocrResults, successMessage, removedCount,
+      processFile, confirmMatch, removeItem, reset,
+      updateItem
   } = useScanner();
 
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const [tempPassword, setTempPassword] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  
+  // Edit Modal State
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({ merchantName: '', amount: '', currency: '' });
 
   // UI Helpers
   const handleDrag = (e: React.DragEvent) => {
@@ -37,6 +43,29 @@ export const Scanner: React.FC = () => {
       await confirmMatch(selectedAccountId);
       setTimeout(reset, 2000);
   };
+  
+  const startEdit = (index: number) => {
+      const item = ocrResults[index];
+      setEditForm({
+          merchantName: item.merchantName,
+          amount: Math.abs(item.amount).toString(),
+          currency: item.currency || 'USD'
+      });
+      setEditingIndex(index);
+  };
+
+  const saveEdit = () => {
+      if (updateItem && editingIndex !== null) {
+          updateItem(editingIndex, {
+              merchantName: editForm.merchantName,
+              amount: parseFloat(editForm.amount) * (ocrResults[editingIndex].amount < 0 ? -1 : 1), // Preserve sign
+              currency: editForm.currency
+          });
+      }
+      setEditingIndex(null);
+  };
+
+  const isBulk = ocrResults.length > 1;
 
   return (
     <div className="p-4 space-y-6 pb-24 h-full flex flex-col relative">
@@ -51,20 +80,24 @@ export const Scanner: React.FC = () => {
           </div>
       ) : (
       <>
-      <p className="text-zinc-400 text-sm">Upload receipts or bank statements.</p>
+      {!file && <p className="text-zinc-400 text-sm">Upload receipts or bank statements for a specific account.</p>}
 
-      <div className="bg-zinc-900/50 p-3 rounded-xl border border-zinc-800 relative z-20">
-         <Select 
-            label="Link to Account (Optional)"
-            value={selectedAccountId}
-            onChange={(e) => setSelectedAccountId(e.target.value)}
-            options={[
-                { value: '', label: 'Select an account...' },
-                ...accounts.map(acc => ({ value: acc.id, label: `${acc.name} (${acc.type})` }))
-            ]}
-         />
-      </div>
+      {/* Account Selector - Only show if not processing results yet */}
+      {ocrResults.length === 0 && (
+        <div className="bg-zinc-900/50 p-3 rounded-xl border border-zinc-800 relative z-20">
+            <Select 
+                label="Select Account for Import"
+                value={selectedAccountId}
+                onChange={(e) => setSelectedAccountId(e.target.value)}
+                options={[
+                    { value: '', label: 'Select an account...' },
+                    ...accounts.map(acc => ({ value: acc.id, label: `${acc.name} (${acc.type})` }))
+                ]}
+            />
+        </div>
+      )}
 
+      {/* Upload Zone */}
       {!file && (
         <div 
             className={`relative flex-1 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-colors min-h-[200px] z-10 ${
@@ -88,7 +121,8 @@ export const Scanner: React.FC = () => {
         </div>
       )}
 
-      {file && !matchResult && !passwordRequired && (
+      {/* Processing State */}
+      {file && ocrResults.length === 0 && !passwordRequired && (
         <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-zinc-900/50 rounded-3xl border border-zinc-700 p-8">
             <div className="relative">
                 <FileText size={64} className="text-zinc-600" />
@@ -133,43 +167,143 @@ export const Scanner: React.FC = () => {
       )}
 
       {/* Results View */}
-      {matchResult && (
-         <div className="flex-1 flex flex-col gap-4">
-            <div className="bg-surface rounded-2xl p-4 border border-zinc-800">
-                <div className="flex items-center gap-2 mb-2">
-                    <BrainCircuit size={16} className="text-primary" />
-                    <span className="text-xs font-semibold text-primary uppercase tracking-wider">AI Analysis</span>
+      {ocrResults.length > 0 && (
+         <div className="flex-1 flex flex-col gap-4 overflow-hidden relative">
+            <div className="bg-surface rounded-2xl p-4 border border-zinc-800 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                        <BrainCircuit size={16} className="text-primary" />
+                        <span className="text-xs font-semibold text-primary uppercase tracking-wider">Review Data</span>
+                    </div>
+                    {isBulk && (
+                        <span className="text-xs bg-zinc-800 text-white px-2 py-1 rounded-full">
+                            {ocrResults.length} Items
+                        </span>
+                    )}
                 </div>
-                
-                {ocrResult && (
-                    <div className="mb-4 p-3 bg-zinc-900 rounded-lg text-xs text-zinc-400">
-                        <p className="font-medium text-zinc-300 mb-1">Extracted:</p>
-                        <p>Merchant: {ocrResult.merchantName}</p>
-                        <p>Amount: ${ocrResult.amount.toFixed(2)}</p>
+
+                {removedCount > 0 && (
+                    <div className="mb-3 p-2 bg-amber-900/20 border border-amber-500/30 rounded-lg flex items-center gap-2 text-xs text-amber-500">
+                        <AlertCircle size={14} />
+                        <span>{removedCount} reversed transactions were auto-removed.</span>
                     </div>
                 )}
 
-                {matchResult.tx ? (
-                    <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-4 mb-3">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="bg-emerald-500 rounded-full p-1"><Check size={12} className="text-black" /></div>
-                            <span className="text-emerald-500 font-bold">Matched!</span>
-                        </div>
-                        <p className="text-zinc-300 text-sm">Linked to: {matchResult.tx.descriptionEnriched}</p>
+                {isBulk ? (
+                    // BULK LIST VIEW
+                    <div className="flex-1 overflow-y-auto pr-2 space-y-2 no-scrollbar pb-16">
+                        {ocrResults.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center p-3 bg-zinc-900/50 rounded-xl border border-zinc-800/50 hover:border-zinc-700 transition-colors group">
+                                <div className="flex-1 min-w-0 mr-3">
+                                    <p className="font-medium text-zinc-200 text-sm truncate">{item.merchantName}</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-xs text-zinc-500">{item.date.toLocaleDateString()}</p>
+                                        <span className="text-[10px] text-zinc-600 px-1.5 py-0.5 bg-zinc-800 rounded">{item.currency || 'USD'}</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className={`font-mono text-sm ${item.amount < 0 ? 'text-white' : 'text-emerald-400'}`}>
+                                        {item.amount < 0 ? '-' : '+'}{Math.abs(item.amount).toFixed(2)}
+                                    </span>
+                                </div>
+                                <div className="flex gap-1 ml-2">
+                                    <button 
+                                        onClick={() => startEdit(idx)}
+                                        className="p-2 text-zinc-600 hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
+                                        title="Edit transaction"
+                                    >
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button 
+                                        onClick={() => removeItem(idx)}
+                                        className="p-2 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors"
+                                        title="Delete transaction"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : (
-                    <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 mb-3">
-                        <p className="text-amber-500 font-bold mb-1">No Match</p>
-                        <p className="text-zinc-400 text-xs">Creating new transaction.</p>
-                    </div>
+                    // SINGLE ITEM VIEW
+                    <>
+                        <div className="mb-4 p-3 bg-zinc-900 rounded-lg text-xs text-zinc-400 flex justify-between items-center">
+                            <div>
+                                <p className="font-medium text-zinc-300 mb-1">Extracted:</p>
+                                <p>Merchant: {ocrResults[0].merchantName}</p>
+                                <p>Amount: {Math.abs(ocrResults[0].amount).toFixed(2)} {ocrResults[0].currency}</p>
+                            </div>
+                            <button 
+                                onClick={() => startEdit(0)}
+                                className="p-2 bg-zinc-800 rounded-full hover:bg-zinc-700 text-zinc-300"
+                            >
+                                <Edit2 size={14} />
+                            </button>
+                        </div>
+
+                        {matchResult?.tx ? (
+                            <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-4 mb-3">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="bg-emerald-500 rounded-full p-1"><Check size={12} className="text-black" /></div>
+                                    <span className="text-emerald-500 font-bold">Matched!</span>
+                                </div>
+                                <p className="text-zinc-300 text-sm">Linked to: {matchResult.tx.descriptionEnriched}</p>
+                            </div>
+                        ) : (
+                            <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4 mb-3">
+                                <div className="flex items-center gap-3 mb-1">
+                                    <PlusCircle size={16} className="text-blue-400" />
+                                    <p className="text-blue-400 font-bold">New Transaction</p>
+                                </div>
+                                <p className="text-zinc-400 text-xs pl-7">Ready to create new entry.</p>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
-            <div className="flex gap-3">
+            
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-background border-t border-zinc-800 flex gap-3 z-30">
                  <Button variant="secondary" onClick={reset} className="flex-1">Discard</Button>
-                 <Button variant="primary" onClick={onConfirm} className="flex-1">Confirm</Button>
+                 <Button variant="primary" onClick={onConfirm} className="flex-1">
+                     {isBulk ? `Confirm & Import (${ocrResults.length})` : 'Confirm'}
+                 </Button>
             </div>
          </div>
       )}
+
+      {/* Edit Modal */}
+      <Modal isOpen={editingIndex !== null} onClose={() => setEditingIndex(null)} title="Edit Transaction">
+         <div className="space-y-4">
+             <Input 
+                label="Merchant" 
+                value={editForm.merchantName} 
+                onChange={e => setEditForm(prev => ({...prev, merchantName: e.target.value}))} 
+             />
+             <div className="flex gap-4">
+                 <div className="flex-1">
+                    <Input 
+                        label="Amount" 
+                        type="number"
+                        value={editForm.amount} 
+                        onChange={e => setEditForm(prev => ({...prev, amount: e.target.value}))} 
+                    />
+                 </div>
+                 <div className="w-24">
+                    <Input 
+                        label="Currency" 
+                        value={editForm.currency} 
+                        onChange={e => setEditForm(prev => ({...prev, currency: e.target.value}))} 
+                    />
+                 </div>
+             </div>
+             <div className="flex gap-3 pt-2">
+                 <Button variant="secondary" fullWidth onClick={() => setEditingIndex(null)}>Cancel</Button>
+                 <Button variant="primary" fullWidth onClick={saveEdit}>Save</Button>
+             </div>
+         </div>
+      </Modal>
+
       </>
       )}
     </div>

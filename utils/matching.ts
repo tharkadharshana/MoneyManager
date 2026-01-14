@@ -20,6 +20,7 @@ export interface ReceiptCandidate {
   amount: number;
   date: Date;
   merchantName: string;
+  currency?: string; // Added currency support
 }
 
 /**

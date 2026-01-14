@@ -12,6 +12,17 @@ export const LoginView: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const handleError = (err: any) => {
+    console.error(err);
+    if (err.code === 'auth/operation-not-allowed') {
+        setError('Login provider is not enabled in Firebase Console. Please use "Continue as Guest" for demo.');
+    } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in popup was closed.');
+    } else {
+        setError(err.message || 'Authentication failed');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setError('');
@@ -19,7 +30,16 @@ export const LoginView: React.FC = () => {
           if (mode === 'login') await loginWithEmail(email, password);
           else await signupWithEmail(email, password);
       } catch (err: any) {
-          setError(err.message || 'Authentication failed');
+          handleError(err);
+      }
+  };
+
+  const handleGoogleLogin = async () => {
+      setError('');
+      try {
+          await loginWithGoogle();
+      } catch (err: any) {
+          handleError(err);
       }
   };
 
@@ -56,7 +76,7 @@ export const LoginView: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-center gap-2 text-red-400 text-xs">
-                        <AlertCircle size={14} />
+                        <AlertCircle size={14} className="shrink-0" />
                         <span>{error}</span>
                     </div>
                 )}
@@ -77,7 +97,7 @@ export const LoginView: React.FC = () => {
         </div>
 
         <div className="w-full space-y-3">
-          <button onClick={loginWithGoogle} disabled={loading} className="w-full flex items-center justify-center gap-3 bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-100 transition-all">
+          <button onClick={handleGoogleLogin} disabled={loading} className="w-full flex items-center justify-center gap-3 bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-100 transition-all">
              <span>Continue with Google</span>
           </button>
           <button onClick={loginAsGuest} disabled={loading} className="w-full text-zinc-500 font-medium text-sm hover:text-zinc-300 transition-colors py-2">

@@ -1,32 +1,25 @@
-import { 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut,
-  User
-} from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 import { auth } from '../firebase';
 
 export const AuthService = {
   loginWithGoogle: async () => {
-    const provider = new GoogleAuthProvider();
-    return await signInWithPopup(auth, provider);
+    const provider = new firebase.auth.GoogleAuthProvider();
+    return await auth.signInWithPopup(provider);
   },
 
   loginWithEmail: async (email: string, pass: string) => {
-    return await signInWithEmailAndPassword(auth, email, pass);
+    return await auth.signInWithEmailAndPassword(email, pass);
   },
 
   signupWithEmail: async (email: string, pass: string) => {
-    return await createUserWithEmailAndPassword(auth, email, pass);
+    return await auth.createUserWithEmailAndPassword(email, pass);
   },
 
   logout: async () => {
-    return await signOut(auth);
+    return await auth.signOut();
   },
 
-  getMockUser: (): User | any => ({
+  getMockUser: (): any => ({
     uid: 'guest_demo',
     displayName: 'Guest User',
     email: null,

@@ -1,31 +1,19 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  doc, 
-  getDoc,
-  setDoc,
-  onSnapshot, 
-  query, 
-  orderBy 
-} from 'firebase/firestore';
 import { db } from '../firebase';
 import { Transaction, Account, FinancialSummary } from '../types';
 
 export const FirestoreService = {
   // Transactions
   subscribeTransactions: (userId: string, callback: (txs: Transaction[]) => void, onError: (err: any) => void) => {
-    const qTx = query(collection(doc(db, 'users', userId), 'transactions'), orderBy('timestamp', 'desc'));
-    return onSnapshot(qTx, (snapshot) => {
+    const qTx = db.collection('users').doc(userId).collection('transactions').orderBy('timestamp', 'desc');
+    return qTx.onSnapshot((snapshot) => {
       const txData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Transaction[];
       callback(txData);
     }, onError);
   },
 
   addTransaction: async (userId: string, tx: Transaction) => {
-    const { id, ...data } = tx; // Remove local ID if letting Firestore gen it, or keep if manual
-    // We strictly use the collection reference
-    return await addDoc(collection(doc(db, 'users', userId), 'transactions'), {
+    const { id, ...data } = tx;
+    return await db.collection('users').doc(userId).collection('transactions').add({
       ...data,
       userId,
       createdAt: new Date().toISOString(),
@@ -34,8 +22,7 @@ export const FirestoreService = {
   },
 
   updateTransaction: async (userId: string, txId: string, updates: Partial<Transaction>) => {
-    const txRef = doc(db, 'users', userId, 'transactions', txId);
-    return await updateDoc(txRef, {
+    return await db.collection('users').doc(userId).collection('transactions').doc(txId).update({
       ...updates,
       updatedAt: new Date().toISOString()
     });
@@ -43,15 +30,15 @@ export const FirestoreService = {
 
   // Accounts
   subscribeAccounts: (userId: string, callback: (accs: Account[]) => void, onError: (err: any) => void) => {
-    const qAcc = query(collection(doc(db, 'users', userId), 'accounts'));
-    return onSnapshot(qAcc, (snapshot) => {
+    const qAcc = db.collection('users').doc(userId).collection('accounts');
+    return qAcc.onSnapshot((snapshot) => {
       const accData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Account[];
       callback(accData);
     }, onError);
   },
 
   addAccount: async (userId: string, account: Omit<Account, 'id'>) => {
-    return await addDoc(collection(doc(db, 'users', userId), 'accounts'), {
+    return await db.collection('users').doc(userId).collection('accounts').add({
       ...account,
       lastSynced: new Date().toISOString(),
       dataSince: new Date().toISOString(),
@@ -60,16 +47,19 @@ export const FirestoreService = {
   },
 
   updateAccount: async (userId: string, accId: string, updates: Partial<Account>) => {
-    const accRef = doc(db, 'users', userId, 'accounts', accId);
-    return await updateDoc(accRef, updates);
+    return await db.collection('users').doc(userId).collection('accounts').doc(accId).update(updates);
+  },
+
+  deleteAccount: async (userId: string, accId: string) => {
+    return await db.collection('users').doc(userId).collection('accounts').doc(accId).delete();
   },
 
   // Financial Summary
   getFinancialSummary: async (userId: string): Promise<FinancialSummary | null> => {
     try {
-      const docRef = doc(db, 'users', userId, 'summary', 'overview');
-      const snap = await getDoc(docRef);
-      return snap.exists() ? (snap.data() as FinancialSummary) : null;
+      const docRef = db.collection('users').doc(userId).collection('summary').doc('overview');
+      const snap = await docRef.get();
+      return snap.exists ? (snap.data() as FinancialSummary) : null;
     } catch (e) {
       console.error("Error fetching summary:", e);
       return null;
@@ -78,8 +68,8 @@ export const FirestoreService = {
 
   saveFinancialSummary: async (userId: string, summary: FinancialSummary) => {
     try {
-      const docRef = doc(db, 'users', userId, 'summary', 'overview');
-      await setDoc(docRef, summary, { merge: true });
+      const docRef = db.collection('users').doc(userId).collection('summary').doc('overview');
+      await docRef.set(summary, { merge: true });
     } catch (e) {
       console.error("Error saving summary:", e);
     }

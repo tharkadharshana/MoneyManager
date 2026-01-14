@@ -138,7 +138,7 @@ export interface Transaction {
 export interface Account {
   id: string;
   name: string;
-  type: 'CREDIT' | 'DEBIT' | 'CASH' | 'INVESTMENT' | 'LOAN';
+  type: 'CREDIT' | 'DEBIT' | 'CASH' | 'INVESTMENT' | 'LOAN' | 'SAVINGS' | 'CURRENT';
   balance: number;
   currency: string;
   lastSynced: string;
